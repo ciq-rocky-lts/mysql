@@ -1,0 +1,40 @@
+# Fails since 8.0.21
+x.resource_groups                                 : BUG#0
+
+# Fails since 8.0.22
+main.subquery_bugs                                : BUG#0
+
+# Fails since F32 Mass Rebuild
+gis.geometry_class_attri_prop                     : BUG#0
+gis.geometry_property_function_issimple           : BUG#0
+gis.gis_bugs_crashes                              : BUG#0
+gis.spatial_analysis_functions_buffer             : BUG#0
+gis.spatial_analysis_functions_centroid           : BUG#0
+gis.spatial_analysis_functions_distance           : BUG#0
+gis.spatial_operators_intersection                : BUG#0
+gis.spatial_operators_union                       : BUG#0
+gis.spatial_operators_symdifference               : BUG#0
+gis.spatial_op_testingfunc_mix                    : BUG#0
+gis.spatial_utility_function_distance_sphere      : BUG#0
+gis.spatial_utility_function_simplify             : BUG#0
+
+main.window_std_var                               : BUG#0
+main.window_std_var_optimized                     : BUG#0
+main.with_recursive                               : BUG#0
+
+# Unstable
+main.grant_dynamic_flush                          : BUG#0
+
+# Failing on C9S & RHEL 9 for MySQL release 8.0.27
+gis.st_symdifference                              : BUG#0
+main.regular_expressions_utf-8                    : BUG#0
+main.subquery_sj_dupsweed                         : BUG#0
+main.subquery_sj_dupsweed_bka                     : BUG#0
+main.subquery_sj_dupsweed_bka_nobnl               : BUG#0
+main.subquery_sj_firstmatch                       : BUG#0
+main.subquery_sj_firstmatch_bka                   : BUG#0
+main.subquery_sj_firstmatch_bka_nobnl             : BUG#0
+
+# Failing due to containerized build environment:
+main.select_none                                  : BUG#0
+main.mysql_client_test                            : BUG#0
