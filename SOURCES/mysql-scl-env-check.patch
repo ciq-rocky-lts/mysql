@@ -1,0 +1,144 @@
+diff -up mysql-8.0.11/scripts/mysqld_safe.sh.p90 mysql-8.0.11/scripts/mysqld_safe.sh
+--- mysql-8.0.11/scripts/mysqld_safe.sh.p90	2018-04-08 08:44:49.000000000 +0200
++++ mysql-8.0.11/scripts/mysqld_safe.sh	2018-06-23 21:28:20.533825845 +0200
+@@ -11,6 +11,12 @@
+ # mysql.server works by first doing a cd to the base directory and from there
+ # executing mysqld_safe
+ 
++# we want start daemon only inside "scl enable" invocation
++if ! scl_enabled @SCL_NAME@ ; then
++    echo "Use \"scl enable @SCL_NAME@ 'service ...'\" invocation"
++    exit 1
++fi
++
+ # Initialize script globals
+ KILL_MYSQLD=1;
+ MYSQLD=
+diff -up mysql-8.0.11/scripts/mysql.init.in.p90 mysql-8.0.11/scripts/mysql.init.in
+--- mysql-8.0.11/scripts/mysql.init.in.p90	2018-06-23 21:28:20.531825833 +0200
++++ mysql-8.0.11/scripts/mysql.init.in	2018-06-23 21:28:20.533825845 +0200
+@@ -71,8 +71,8 @@ start(){
+ 	action $"Starting $prog: " /bin/true
+ 	ret=0
+     else
+-        @libexecdir@/mysql-check-socket || return 1
+-        su - $MYUSER -s /bin/bash -c "@libexecdir@/mysql-prepare-db-dir $MYUSER $MYGROUP" || return 4
++        scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-check-socket || return 1
++        su - $MYUSER -s /bin/bash -c "scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-prepare-db-dir $MYUSER $MYGROUP" || return 4
+ 
+ 	# Pass all the options determined above, to ensure consistent behavior.
+ 	# In many cases mysqld_safe would arrive at the same conclusions anyway
+@@ -81,13 +81,13 @@ start(){
+ 	# and some users might prefer to configure logging to syslog.)
+ 	# Note: set --basedir to prevent probes that might trigger SELinux
+ 	# alarms, per bug #547485
+-	su - $MYUSER -s /bin/bash -c "$exec   --datadir='$datadir' --socket='$socketfile' \
++	su - $MYUSER -s /bin/bash -c "scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- $exec   --datadir='$datadir' --socket='$socketfile' \
+ 		--pid-file='$pidfile' \
+ 		--basedir=@prefix@ --user=$MYUSER" >/dev/null 2>&1 &
+ 	safe_pid=$!
+ 
+ 	# Wait until the daemon is up
+-	su - $MYUSER -s /bin/bash -c "@libexecdir@/mysql-wait-ready '$safe_pid'"
++	su - $MYUSER -s /bin/bash -c "scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-wait-ready '$safe_pid'"
+ 	ret=$?
+ 
+ 	if [ $ret -eq 0 ]; then
+@@ -154,6 +154,18 @@ condrestart(){
+     [ -e $lockfile ] && restart || :
+ }
+ 
++# We have to re-enable SCL environment, because /sbin/service
++# clears almost all environment variables.
++# Since X_SCLS is cleared as well, we lose information about other
++# collections enabled.
++source @SCL_SCRIPTS@/service-environment
++source scl_source enable $@SCL_NAME_UPPER@_SCLS_ENABLED
++
++# we want start daemon only inside "scl enable" invocation
++if ! scl_enabled @SCL_NAME@ ; then
++    echo "Collection @SCL_NAME@ has to be listed in @SCL_SCRIPTS@/service-environment"
++    exit 1
++fi
+ 
+ # See how we were called.
+ case "$1" in
+diff -up mysql-8.0.11/scripts/mysql.service.in.p90 mysql-8.0.11/scripts/mysql.service.in
+--- mysql-8.0.11/scripts/mysql.service.in.p90	2018-06-23 21:28:20.531825833 +0200
++++ mysql-8.0.11/scripts/mysql.service.in	2018-06-23 21:34:19.940881913 +0200
+@@ -32,16 +32,23 @@ After=network.target
+ 
+ [Service]
+ Type=notify
++NotifyAccess=all
+ User=mysql
+ Group=mysql
+ 
+-ExecStartPre=@libexecdir@/mysql-check-socket
+-ExecStartPre=@libexecdir@/mysql-prepare-db-dir %n
++# Load collections set to enabled for this service
++EnvironmentFile=@SCL_SCRIPTS@/service-environment
++
++# We want to start server only inside "scl enable" invocation
++ExecStartPre=/usr/bin/scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- /usr/bin/scl_enabled @SCL_NAME@
++
++ExecStartPre=/usr/bin/scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-check-socket
++ExecStartPre=/usr/bin/scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-prepare-db-dir %n
+ # Note: we set --basedir to prevent probes that might trigger SELinux alarms,
+ # per bug #547485
+-ExecStart=@libexecdir@/mysqld --basedir=@prefix@
+-ExecStartPost=@libexecdir@/mysql-check-upgrade
+-ExecStopPost=@libexecdir@/mysql-wait-stop
++ExecStart=@libexecdir@/mysqld-scl-helper enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysqld --basedir=@prefix@
++ExecStartPost=/usr/bin/scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-check-upgrade
++ExecStopPost=/usr/bin/scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-wait-stop
+ 
+ # Give a reasonable amount of time for the server to start up/shut down
+ TimeoutSec=300
+diff -up mysql-8.0.11/scripts/mysql@.service.in.p90 mysql-8.0.11/scripts/mysql@.service.in
+--- mysql-8.0.11/scripts/mysql@.service.in.p90	2018-06-23 21:28:20.531825833 +0200
++++ mysql-8.0.11/scripts/mysql@.service.in	2018-06-23 21:34:30.583942800 +0200
+@@ -32,16 +32,23 @@ After=network.target
+ 
+ [Service]
+ Type=notify
++NotifyAccess=all
+ User=mysql
+ Group=mysql
+ 
+-ExecStartPre=@libexecdir@/mysql-check-socket --defaults-group-suffix=.%I
+-ExecStartPre=@libexecdir@/mysql-prepare-db-dir --defaults-group-suffix=.%I %n
++# Load collections set to enabled for this service
++EnvironmentFile=@SCL_SCRIPTS@/service-environment
++
++# We want to start server only inside "scl enable" invocation
++ExecStartPre=/usr/bin/scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- /usr/bin/scl_enabled @SCL_NAME@
++
++ExecStartPre=/usr/bin/scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-check-socket --defaults-group-suffix=.%I
++ExecStartPre=/usr/bin/scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-prepare-db-dir --defaults-group-suffix=.%I %n
+ # Note: we set --basedir to prevent probes that might trigger SELinux alarms,
+ # per bug #547485
+-ExecStart=@libexecdir@/mysqld --defaults-group-suffix=.%I --basedir=@prefix@
+-ExecStartPost=@libexecdir@/mysql-check-upgrade --defaults-group-suffix=.%I
+-ExecStopPost=@libexecdir@/mysql-wait-stop --defaults-group-suffix=.%I
++ExecStart=@libexecdir@/mysqld-scl-helper enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysqld --defaults-group-suffix=.%I --basedir=@prefix@
++ExecStartPost=/usr/bin/scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-check-upgrade --defaults-group-suffix=.%I
++ExecStopPost=/usr/bin/scl enable $@SCL_NAME_UPPER@_SCLS_ENABLED -- @libexecdir@/mysql-wait-stop --defaults-group-suffix=.%I
+ 
+ # Give a reasonable amount of time for the server to start up/shut down
+ TimeoutSec=300
+diff -up mysql-8.0.11/support-files/mysql-log-rotate.sh.p90 mysql-8.0.11/support-files/mysql-log-rotate.sh
+--- mysql-8.0.11/support-files/mysql-log-rotate.sh.p90	2018-04-08 08:44:49.000000000 +0200
++++ mysql-8.0.11/support-files/mysql-log-rotate.sh	2018-06-23 21:28:20.533825845 +0200
+@@ -51,9 +51,9 @@
+     postrotate
+ 	# just if mysqld is really running
+ 	if test -x @bindir@/mysqladmin && \
+-	   @bindir@/mysqladmin ping &>/dev/null
++	   /usr/bin/scl enable @SCL_NAME@ -- @bindir@/mysqladmin ping &>/dev/null
+ 	then
+-	   @bindir@/mysqladmin flush-logs
++	   /usr/bin/scl enable @SCL_NAME@ -- @bindir@/mysqladmin flush-logs
+ 	fi
+     endscript
+ }

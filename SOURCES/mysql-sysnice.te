@@ -1,0 +1,10 @@
+
+module mysql-sysnice 1.0;
+
+require {
+	type mysqld_t;
+	class capability sys_nice;
+}
+
+#============= mysqld_t ==============
+allow mysqld_t self:capability sys_nice;

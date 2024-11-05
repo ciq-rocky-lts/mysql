@@ -1,0 +1,9 @@
+# Failing on C9S & RHEL 9 for MySQL release 8.0.27
+sys_vars.innodb_buffer_pool_size_basic     : BUG#0
+
+# Unstable on aarch64 since MySQL 8.0.28
+innodb_undo.undo_settings                     : BUG#0
+
+# Unstable on aarch64 since MySQL 8.0.36
+sys_vars.myisam_data_pointer_size_func     : BUG#0
+rpl.rpl_eventlog_psi_memory                : BUG#0

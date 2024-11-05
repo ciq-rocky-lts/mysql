@@ -1,0 +1,16 @@
+diff --git a/mysql-test/include/mtr_warnings.sql b/mysql-test/include/mtr_warnings.sql
+index 78b09285..b7153445 100644
+--- a/mysql-test/include/mtr_warnings.sql
++++ b/mysql-test/include/mtr_warnings.sql
+@@ -376,6 +376,11 @@ INSERT INTO global_suppressions VALUES
+ 
+  ("'mysql_native_password' is deprecated and will be removed in a future release."),
+ 
++ /*
++   ARM32 don't support timers and get this warning in every test.
++ */
++ ("The CYCLE timer is not available. WAIT events in the performance_schema will not be timed."),
++
+  ("THE_LAST_SUPPRESSION");
+ 
+ 

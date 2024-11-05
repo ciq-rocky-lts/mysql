@@ -1,0 +1,11 @@
+--- mysql-8.0.11/support-files/mysql-log-rotate.in.old	2018-09-13 18:43:03.595891364 +0200
++++ mysql-8.0.11/support-files/mysql-log-rotate.in	2018-09-13 18:43:36.774236649 +0200
+@@ -41,7 +41,7 @@
+ # ATTENTION: The /root/.my.cnf file should be readable
+ # _ONLY_ by root !
+ 
+-@localstatedir@/mysqld.log {
++@LOG_LOCATION@ {
+         # create 600 mysql mysql
+         notifempty
+         daily

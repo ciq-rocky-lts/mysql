@@ -1,0 +1,5 @@
+# Fails since 8.0.22
+main.subquery_bugs                                : BUG#0
+
+# Failing on C9S & RHEL 9 for MySQL release 8.0.33
+main.subquery_sj_all_bka_nobnl                    : BUG#0
