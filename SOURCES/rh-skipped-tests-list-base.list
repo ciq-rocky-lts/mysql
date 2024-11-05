@@ -1,0 +1,46 @@
+auth_sec.tls12_tls1 : BUG#0
+auth_sec.tls13_tls1 : BUG#0
+x.connection_tls_version : BUG#0
+
+# x86_64
+auth_sec.keyring_file_data_qa : BUG#0
+main.mysql_load_data_local_dir : BUG#0
+# i686
+main.ctype_unicode900_as_cs : BUG#0
+collations.chinese : BUG#0
+main.mysql_load_data_local_dir : BUG#0
+
+# x86_64, s390x
+main.mysqld--defaults-file : BUG#0
+main.mysqltest_json : BUG#0
+main.mtr_unit_tests : BUG#0
+main.mysqld--help-notwin : BUG#0
+
+# Unstable since 8.0.27
+innodb.innodb_read_only-2 : BUG#0
+
+# Failing on 32-bit arches: armv7hl i686 s390x; since MySQL 8.0.25
+x.connection_unixsocket                    : BUG#0
+x.connection_unixsocket_invalid            : BUG#0
+x.connection_unixsocket_lock               : BUG#0
+innodb.innodb_bug-13628249                 : BUG#0
+
+# Failing since MySQL 8.0.29
+main.mysqlpump_bugs                        : BUG#0
+
+# Failing since MySQL 8.0.30
+auth_sec.fips                              : BUG#0
+rpl.rpl_fips                               : BUG#0
+
+# Failing since MySQL 8.0.35
+binlog.binlog_mysqlbinlog_linux            : BUG#0
+perfschema.idx_session_connect_attrs       : BUG#0
+rpl_gtid.mysqldump_bug33630199             : BUG#0
+
+# Failing since MySQL 8.0.36
+main.generated_invisible_primary_key       : BUG#0
+main.slow_log                              : BUG#0
+main.archive_plugin                        : BUG#0
+main.blackhole_plugin                      : BUG#0
+main.events_read_only                      : BUG#0
+main.log_backtrace                         : BUG#0

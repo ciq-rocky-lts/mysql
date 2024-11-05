@@ -1,0 +1,5 @@
+# ppc64le
+sys_vars.innodb_buffer_pool_size_basic     : BUG#0 fails only on ppc64le on f32+
+
+# Unstable on 8.0.35
+rpl.rpl_replica_terminology                : BUG#0

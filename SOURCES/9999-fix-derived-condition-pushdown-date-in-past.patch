@@ -1,0 +1,26 @@
+diff --git a/mysql-test/r/derived_condition_pushdown.result b/mysql-test/r/derived_condition_pushdown.result
+index f414f367..8b4f4a51 100644
+--- a/mysql-test/r/derived_condition_pushdown.result
++++ b/mysql-test/r/derived_condition_pushdown.result
+@@ -2111,7 +2111,7 @@ EXPLAIN
+ -> Zero rows (no matching row in const table)  (rows=0)
+ 
+ SET @a = 2;
+-SET @b = '2023-05-06 16:49:45';
++SET @b = '2123-05-06 16:49:45';
+ SET timestamp=UNIX_TIMESTAMP('2023-05-06 16:49:45');
+ EXECUTE stmt USING @a, @b;
+ EXPLAIN
+diff --git a/mysql-test/t/derived_condition_pushdown.test b/mysql-test/t/derived_condition_pushdown.test
+index 3d3574d6..26215271 100644
+--- a/mysql-test/t/derived_condition_pushdown.test
++++ b/mysql-test/t/derived_condition_pushdown.test
+@@ -1312,7 +1312,7 @@ eval PREPARE stmt FROM "EXPLAIN FORMAT=tree $query";
+ --skip_if_hypergraph  # Depends on the query plan.
+ eval EXECUTE stmt USING @a, @b;
+ SET @a = 2;
+-SET @b = '2023-05-06 16:49:45';
++SET @b = '2123-05-06 16:49:45';
+ SET timestamp=UNIX_TIMESTAMP('2023-05-06 16:49:45');
+ --replace_regex $elide_costs
+ --skip_if_hypergraph  # Depends on the query plan.
