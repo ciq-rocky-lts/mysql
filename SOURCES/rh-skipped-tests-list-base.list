@@ -33,3 +33,6 @@ rpl.rpl_fips                               : BUG#0
 binlog.binlog_mysqlbinlog_linux            : BUG#0
 perfschema.idx_session_connect_attrs       : BUG#0
 rpl_gtid.mysqldump_bug33630199             : BUG#0
+
+# Failing since MySQL 8.0.40
+main.time_zone				   : BUG#0

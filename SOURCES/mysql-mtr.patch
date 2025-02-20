@@ -82,9 +82,9 @@ I'm not sure whether the output is synchronous, but even if it wasn'tit still lo
 
 diff --git a/mysql-test/mysql-test-run.pl b/mysql-test/mysql-test-run.pl
 index 26e6c92c..9d85c6d6 100755
---- a/mysql-test/mysql-test-run.pl
-+++ b/mysql-test/mysql-test-run.pl
-@@ -3533,17 +3533,6 @@ sub setup_vardir() {
+--- mysql-8.0.39/mysql-test/mysql-test-run.pl	2024-08-11 01:20:12.207260860 +0200
++++ mysql-8.0.39/mysql-test/mysql-test-run.pl_patched	2024-08-11 20:44:42.230145160 +0200
+@@ -3560,17 +3560,6 @@ sub setup_vardir() {
    mkpath("$opt_vardir/tmp");
    mkpath($opt_tmpdir) if ($opt_tmpdir ne "$opt_vardir/tmp");
  
@@ -92,7 +92,7 @@ index 26e6c92c..9d85c6d6 100755
 -  # UNIX domain socket's path far below PATH_MAX. Don't allow that
 -  # to happen.
 -  my $res =
--    check_socket_path_length("$opt_tmpdir/mysqld.NN.sock", $opt_parallel);
+-    check_socket_path_length("$opt_tmpdir/mysqld.NN.sock", $opt_parallel, $tmpdir_path_updated);
 -  if ($res) {
 -    mtr_error("Socket path '$opt_tmpdir' too long, it would be ",
 -              "truncated and thus not possible to use for connection to ",

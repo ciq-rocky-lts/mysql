@@ -1,7 +1,7 @@
 Index: boost/pool/pool.hpp
 ===================================================================
---- boost/pool/pool.hpp	(revision 78317)
-+++ boost/pool/pool.hpp	(revision 78326)
+--- a/boost/pool/pool.hpp	(revision 78317)
++++ b/boost/pool/pool.hpp	(revision 78326)
 @@ -27,4 +27,6 @@
  #include <boost/pool/poolfwd.hpp>
  
@@ -88,8 +88,8 @@ Index: boost/pool/pool.hpp
    //  insert it into the list,
 Index: libs/pool/test/test_bug_6701.cpp
 ===================================================================
---- libs/pool/test/test_bug_6701.cpp	(revision 78326)
-+++ libs/pool/test/test_bug_6701.cpp	(revision 78326)
+--- a/libs/pool/test/test_bug_6701.cpp	(revision 78326)
++++ b/libs/pool/test/test_bug_6701.cpp	(revision 78326)
 @@ -0,0 +1,27 @@
 +/* Copyright (C) 2012 Étienne Dupuis
 +* 

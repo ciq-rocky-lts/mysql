@@ -10,8 +10,8 @@ Subject: [PATCH] Update gcc Intel intrinsic usage config. Fixes
 
 diff --git a/include/boost/multiprecision/cpp_int/intel_intrinsics.hpp b/include/boost/multiprecision/cpp_int/intel_intrinsics.hpp
 index eb4624bb4..37717cd51 100644
---- a/include/boost/multiprecision/cpp_int/intel_intrinsics.hpp
-+++ b/include/boost/multiprecision/cpp_int/intel_intrinsics.hpp
+--- a/boost/multiprecision/cpp_int/intel_intrinsics.hpp
++++ b/boost/multiprecision/cpp_int/intel_intrinsics.hpp
 @@ -19,7 +19,11 @@
  // If this is GCC/clang, then check that the actual intrinsic exists:
  //

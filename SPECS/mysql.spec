@@ -16,7 +16,7 @@ ExcludeArch:          %{ix86}
 # The last version on which the full testsuite has been run
 # In case of further rebuilds of that version, don't require full testsuite to be run
 # run only "main" suite
-%global last_tested_version 8.0.36
+%global last_tested_version 8.0.41
 # Set to 1 to force run the testsuite even if it was already tested in current version
 %global force_run_testsuite 0
 # Aditional SELinux rules
@@ -77,8 +77,8 @@ ExcludeArch:          %{ix86}
 %global sameevr   %{?epoch:%{epoch}:}%{version}-%{release}
 
 Name:                 mysql
-Version:              8.0.36
-Release:              1%{?with_debug:.debug}%{?dist}
+Version:              8.0.41
+Release:              2%{?with_debug:.debug}%{?dist}
 Summary:              MySQL client programs and shared libraries
 URL:                  http://www.mysql.com
 
@@ -121,6 +121,7 @@ Patch52:              %{pkgnamepatch}-rpath.patch
 Patch53:              %{pkgnamepatch}-mtr.patch
 Patch54:              %{pkgnamepatch}-arm32-timer.patch
 Patch55:              %{pkgnamepatch}-c99.patch
+Patch56:              %{pkgnamepatch}-flush-logrotate.patch
 
 # Patches taken from boost 1.59
 Patch111:             boost-1.58.0-pool.patch
@@ -394,12 +395,13 @@ the MySQL sources.
 %patch -P53 -p1
 %patch -P54 -p1
 %patch -P55 -p1
+%patch -P56 -p1
 
 # Patch Boost
 pushd boost/boost_$(echo %{boost_bundled_version}| tr . _)
-%patch -P111 -p0
+%patch -P111 -p1
 %patch -P112 -p1
-%patch -P113 -p2
+%patch -P113 -p1
 popd
 
 # generate a list of tests that fail, but are not disabled by upstream
@@ -441,7 +443,6 @@ cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} \
 # so we can't use %%{_datadir} and so forth here.
 %cmake \
          -DBUILD_CONFIG=mysql_release \
-         -DFEATURE_SET="community" \
          -DINSTALL_LAYOUT=RPM \
          -DDAEMON_NAME="%{daemon_name}" \
          -DDAEMON_NO_PREFIX="%{daemon_no_prefix}" \
@@ -489,7 +490,6 @@ cp %{SOURCE2} %{SOURCE3} %{SOURCE10} %{SOURCE11} %{SOURCE12} \
 %{?with_debug: -DWITH_DEBUG=1} \
 %{?with_debug: -DMYSQL_MAINTAINER_MODE=0} \
          -DTMPDIR=/var/tmp \
-         -DWITH_MYSQLD_LDFLAGS="%{build_ldflags}" \
          -DCMAKE_C_LINK_FLAGS="%{build_ldflags}" \
          -DCMAKE_CXX_LINK_FLAGS="%{build_ldflags}" \
          -DCMAKE_SKIP_INSTALL_RPATH=YES \
@@ -986,8 +986,27 @@ fi
 %endif
 
 %changelog
-* Tue Mar 05 2024 Skip Grube <skip@rockylinux.org> - 8.0.36-1
+* Wed Feb 19 2025 Skip Grube <skip@rockylinux.org> - 8.0.41-2
 - Rocky Linux: Temporarily disable s390x-specific TMPFILE tests which break in Peridot build env
+
+* Thu Feb 13 2025 Lukas Javorsky <ljavorsk@redhat.com> - 8.0.41-2
+- Fix patching of logrotate
+
+* Fri Feb 07 2025 Lukas Javorsky <ljavorsk@redhat.com> - 8.0.41-1
+- Update to MySQL 8.0.41
+
+* Thu Feb 06 2025 Lukas Javorsky <ljavorsk@redhat.com> - 8.0.40-1
+- Update to MySQL 8.0.40
+
+* Thu Feb 06 2025 Lukas Javorsky <ljavorsk@redhat.com> - 8.0.39-1
+- Rebase to version 8.0.39
+
+* Fri Apr 19 2024 Honza Horak <hhorak@redhat.com> - 8.0.37-2
+- Use signal to flush logs when rotating
+
+* Thu Apr 18 2024 Lars Tangvald <lars.tangvald@oracle.com> - 8.0.37-1
+- Update to MySQL 8.0.37
+- Remove some legacy cmake options
 
 * Wed Jan 03 2024 Lars Tangvald <lars.tangvald@oracle.com> - 8.0.36-1
 - Update to MySQL 8.0.36
